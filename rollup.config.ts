@@ -7,7 +7,7 @@ import { eslint } from 'rollup-plugin-eslint'
 
 const pkg = require('./package.json')
 
-const libraryName = 'libraryName'
+const libraryName = 'cvent'
 
 export default {
   input: `src/index.ts`,

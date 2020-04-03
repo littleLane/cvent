@@ -1,18 +1,24 @@
 {
-  "name": "libraryName",
-  "version": "0.0.0",
-  "description": "",
-  "keywords": [],
-  "main": "dist/libraryName.umd.js",
-  "module": "dist/libraryName.es5.js",
-  "typings": "dist/types/libraryName.d.ts",
+  "name": "cvent",
+  "version": "0.0.1",
+  "description": "An extension library based on browser events!",
+  "keywords": [
+    "cvent",
+    "customeEvent",
+    "event",
+    "pubsub",
+    "eventEmitter"
+  ],
+  "main": "dist/cvent.umd.js",
+  "module": "dist/cvent.es5.js",
+  "typings": "dist/types/cvent.d.ts",
   "files": [
     "dist"
   ],
   "author": "littleLane <lzz857183384@163.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:littleLane/cvent.git"
   },
   "license": "MIT",
   "engines": {
