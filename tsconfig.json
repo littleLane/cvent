@@ -12,8 +12,13 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
     "outDir": "dist/lib",
+    "noImplicitAny": true,
     "typeRoots": [
       "node_modules/@types"
+    ],
+    "types": [
+      "jest",
+      "jsdom",
     ]
   },
   "include": [
