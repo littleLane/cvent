@@ -4,7 +4,7 @@ import debounce from './utils/debounce'
 import { enhanceForEachEvent, getType } from './utils/utils'
 import throttle from './utils/throttle'
 
-export default class EventEmiter {
+export default class Cvent {
   private target: EventTarget
   private canIUseNative: boolean
   private eventListeners: Record<string, ICustomEventListener[]> = {}
@@ -14,7 +14,9 @@ export default class EventEmiter {
   constructor(target: EventTarget = window) {
     this.target = target
     this.canIUseNative =
-      getType(target.addEventListener) === DefTypes.FUNC && getType(target.removeEventListener) === DefTypes.FUNC
+      !!this.target &&
+      getType(target.addEventListener) === DefTypes.FUNC &&
+      getType(target.removeEventListener) === DefTypes.FUNC
   }
 
   /**
@@ -23,7 +25,7 @@ export default class EventEmiter {
    * @param event
    * @param eventlistener
    */
-  on(event: string | string[], eventlistener: ICustomEventListener): EventEmiter {
+  on(event: string | string[], eventlistener: ICustomEventListener): Cvent {
     enhanceForEachEvent({
       event,
       listener: eventlistener,
@@ -50,30 +52,29 @@ export default class EventEmiter {
    * @param event
    * @param eventlistener
    */
-  off(event: string | string[], eventlistener?: ICustomEventListener): EventEmiter {
+  off(event: string | string[], eventlistener?: ICustomEventListener): Cvent {
     enhanceForEachEvent({
       event,
       listener: eventlistener,
       eachCallback: ({ eventName }) => {
         const evListeners = this.eventListeners[eventName]
-        const evListenerArr = Array.isArray(evListeners) ? evListeners : [evListeners]
 
         if (eventlistener) {
           if (this.canIUseNative) {
             this.target.removeEventListener(eventName, eventlistener, false)
           }
 
-          const indexOf = evListenerArr.indexOf(eventlistener)
+          const indexOf = evListeners.indexOf(eventlistener)
 
           if (indexOf > -1) {
-            evListenerArr.splice(indexOf, 1)
+            evListeners.splice(indexOf, 1)
           }
 
           return
         }
 
         if (this.canIUseNative) {
-          evListenerArr.forEach((evListener: ICustomEventListener) => {
+          evListeners.forEach((evListener: ICustomEventListener) => {
             this.target.removeEventListener(eventName, evListener, false)
           })
         }
@@ -91,7 +92,7 @@ export default class EventEmiter {
    * @param event
    * @param payload
    */
-  emit(event: string | string[], payload: any = null): EventEmiter {
+  emit(event: string | string[], payload: any = null): Cvent {
     enhanceForEachEvent({
       event,
       eachCallback: ({ eventName }) => {
@@ -109,11 +110,7 @@ export default class EventEmiter {
    * @param payload
    * @param options
    */
-  emitDebounce(
-    event: string | string[],
-    payload: any = null,
-    { wait, immediate }: IEmitDebounceOptions = {}
-  ): EventEmiter {
+  emitDebounce(event: string | string[], payload: any = null, { wait, immediate }: IEmitDebounceOptions = {}): Cvent {
     enhanceForEachEvent({
       event,
       eachCallback: ({ eventName }) => {
@@ -141,7 +138,7 @@ export default class EventEmiter {
     event: string | string[],
     payload: any = null,
     { wait, leading, trailing }: IEmitThrottleOptions = {}
-  ): EventEmiter {
+  ): Cvent {
     enhanceForEachEvent({
       event,
       eachCallback: ({ eventName }) => {
@@ -168,7 +165,7 @@ export default class EventEmiter {
 
     // 不支持浏览器事件处理方案就降级到队列处理
     if (!this.canIUseNative) {
-      this.eventListeners[ev].forEach(listener => listener(firePayload))
+      this.eventListeners[ev].forEach((listener) => listener(firePayload))
       return
     }
 
