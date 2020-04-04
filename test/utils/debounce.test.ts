@@ -58,7 +58,7 @@ describe('Debounce Test', () => {
 
   it('should get correctly return value', () => {
     function func(data: number) {
-      expect(data).toEqual(3);
+      expect(data).toEqual(3)
     }
     const debounceFunc = debounce(func, 1000)
     // wait 1000ms
