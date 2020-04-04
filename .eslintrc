@@ -1,0 +1,26 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "extends": ["plugin:prettier/recommended"],
+  "plugins": ["prettier"],
+  "rules": {
+    "strict": "error",
+    "no-sequences": "error",
+    "no-mixed-operators": "error",
+    "no-useless-escape": "error",
+    "max-len": [
+      "error",
+      {
+        "code": 120
+      }
+    ]
+  },
+  "settings": {}
+}

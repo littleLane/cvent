@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="index.css">
+  <title>Brower Examples</title>
+</head>
+<body>
+  <div class="test-segment">
+    <h2>Cvent</h2>
+    <ul class="test-case-list">
+      <li id="cventBase" class="test-case-item">Cvent base Tester</li>
+    </ul>
+  </div>
+  <script src="../../dist/cvent.js"></script>
+  <script>
+    const listener = (e) => console.log(e);
+    const cvent = new Cvent();
+    cvent.on('a', listener);
+    document.querySelector('#cventBase').addEventListener('click', function () {
+      cvent.emit('a')
+    });
+  </script>
+</body>
+</html>

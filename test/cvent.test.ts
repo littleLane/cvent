@@ -19,12 +19,18 @@ describe('Cvent Test', () => {
     expect(cvent).toHaveProperty('on')
     expect(cvent).toHaveProperty('emit')
     expect(cvent).toHaveProperty('off')
+
+    const cvent1 = new Cvent((null as unknown) as EventTarget)
+    expect(cvent1).toBeInstanceOf(Cvent)
+    expect(cvent1).toHaveProperty('on')
+    expect(cvent1).toHaveProperty('emit')
+    expect(cvent1).toHaveProperty('off')
   })
 
   it('Cvent should on and emit event well', () => {
     const cvent = new Cvent()
-    const func1 = jest.fn()
 
+    const func1 = jest.fn()
     cvent.on('click1', func1)
     cvent.emit('click1')
     expect(func1).toBeCalledTimes(1)
@@ -50,13 +56,13 @@ describe('Cvent Test', () => {
     expect(func1).toBeCalledTimes(0)
 
     const func2 = jest.fn()
-    const func2_1 = jest.fn()
+    const func21 = jest.fn()
     cvent.on('click2_1, click2_2', func2)
-    cvent.on('click2_1', func2_1)
+    cvent.on('click2_1', func21)
     cvent.off('click2_1')
     cvent.emit('click2_1, click2_2')
     expect(func2).toBeCalledTimes(1)
-    expect(func2_1).toBeCalledTimes(0)
+    expect(func21).toBeCalledTimes(0)
 
     const func3 = jest.fn()
     cvent.on(['click3_1', 'click3_2', 'click3_3'], func3)
@@ -64,6 +70,13 @@ describe('Cvent Test', () => {
     cvent.off(['click3_3'], func3)
     cvent.emit(['click3_1', 'click3_2', 'click3_3'])
     expect(func3).toBeCalledTimes(0)
+
+    const func4 = jest.fn()
+    const func5 = jest.fn()
+    cvent.on(['click4'], func4)
+    cvent.off(['click4'], func5)
+    cvent.emit(['click4'])
+    expect(func4).toBeCalledTimes(1)
   })
 
   it('Cvent should emitDebounce event well', () => {
