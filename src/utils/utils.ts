@@ -2,10 +2,7 @@ import { DefTypes } from './constants'
 import { ICustomEventListener, IEventEachCallback } from '../types'
 
 export function getType(data: any): string {
-  return Object.prototype.toString
-    .call(data)
-    .replace(/\[object\s|\]/g, '')
-    .toLowerCase()
+  return Object.prototype.toString.call(data).replace(/\[object\s|\]/g, '')
 }
 
 export const noop = () => {}
@@ -39,7 +36,7 @@ export function sanitizateEventListener(
   }
 
   return {
-    events: events.map(evt => (getType(evt) === DefTypes.STRING ? evt.trim() : evt.toString())),
+    events: events.map((evt) => (getType(evt) === DefTypes.STRING ? evt.trim() : evt.toString())),
     harmlessListener,
   }
 }
