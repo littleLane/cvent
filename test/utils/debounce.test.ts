@@ -43,7 +43,7 @@ describe('Debounce Test', () => {
     const debouncedFunc3 = debounce(func3)
     debouncedFunc3()
     // wait 5000ms
-    clock.tick(5000)
+    clock.tick(1000)
     // func called
     expect(func3).toHaveBeenCalledTimes(1)
 
@@ -51,7 +51,7 @@ describe('Debounce Test', () => {
     const debouncedFunc4 = debounce(func4, Number.MAX_VALUE)
     debouncedFunc4()
     // wait 5000ms
-    clock.tick(5000)
+    clock.tick(1000)
     // func called
     expect(func4).toHaveBeenCalledTimes(1)
   })

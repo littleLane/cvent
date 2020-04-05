@@ -2,8 +2,8 @@ export type IFireEvent = (ev: string, payload?: any) => void
 
 export interface IEmitThrottleOptions {
   wait?: number
-  leading?: boolean // false 表示禁用第一次执行
-  trailing?: boolean // false 表示禁用停止触发时的回调
+  leading?: boolean // false => not first time will be called
+  trailing?: boolean // false => not last time will be called
 }
 
 export interface IEmitDebounceOptions {

@@ -20,10 +20,10 @@ export default class Cvent {
   }
 
   /**
-   * 注册事件
-   *    支持多事件（字符串用英文逗号隔开或者字符串数组）
-   * @param event
-   * @param eventlistener
+   * register events
+   *    Support multiple events(Strings are separated by commas or array of strings)
+   * @param event Multiple names of events to be registered
+   * @param eventlistener Event handler
    */
   on(event: string | string[], eventlistener: ICustomEventListener): Cvent {
     enhanceForEachEvent({
@@ -46,11 +46,11 @@ export default class Cvent {
   }
 
   /**
-   * 注销事件
-   *    支持多事件（字符串用英文逗号隔开或者字符串数组）
-   *    支持注销一类事件（只传事件名称，不传事件处理函数）
-   * @param event
-   * @param eventlistener
+   * cancel events
+   *    Support multiple events(Strings are separated by commas or array of strings)
+   *    Support to cancel a type of event (only pass the event name, not pass the event processing function)
+   * @param event Multiple names of events to be canceled
+   * @param eventlistener Event handler
    */
   off(event: string | string[], eventlistener?: ICustomEventListener): Cvent {
     enhanceForEachEvent({
@@ -87,10 +87,10 @@ export default class Cvent {
   }
 
   /**
-   * 分发事件
-   *    支持多事件分发（字符串用英文逗号隔开或者字符串数组）
-   * @param event
-   * @param payload
+   * dispatch events
+   *    Support multiple events(Strings are separated by commas or array of strings)
+   * @param event Multiple names of events to be dispatched
+   * @param payload Event handler
    */
   emit(event: string | string[], payload: any = null): Cvent {
     enhanceForEachEvent({
@@ -104,11 +104,11 @@ export default class Cvent {
   }
 
   /**
-   * 防抖事件分发
-   *    支持多事件分发（字符串用英文逗号隔开或者字符串数组）
-   * @param event
-   * @param payload
-   * @param options
+   * dispatch events by debounce
+   *    Support multiple events(Strings are separated by commas or array of strings)
+   * @param event Multiple event name to be dispatched
+   * @param payload Datas to be dispatched
+   * @param options Option of debounce
    */
   emitDebounce(event: string | string[], payload: any = null, { wait, immediate }: IEmitDebounceOptions = {}): Cvent {
     enhanceForEachEvent({
@@ -128,11 +128,11 @@ export default class Cvent {
   }
 
   /**
-   * 节流事件分发
-   *    支持多事件分发（字符串用英文逗号隔开或者字符串数组）
-   * @param event
-   * @param payload
-   * @param options
+   * dispatch events by throttle
+   *    Support multiple events(Strings are separated by commas or array of strings)
+   * @param event Multiple event name to be dispatched
+   * @param payload Datas to be dispatched
+   * @param options Option of throttle
    */
   emitThrottle(
     event: string | string[],
@@ -155,17 +155,33 @@ export default class Cvent {
     return this
   }
 
+  destroy() {
+    if (this.canIUseNative) {
+      Object.keys(this.eventListeners).forEach((eventName: string) => {
+        this.off(eventName)
+      })
+    }
+    this.eventListeners = {}
+    this.debounceEventEmiters = {}
+    this.throttleEventEmiters = {}
+  }
+
   /**
-   * 单个事件分发逻辑
-   * @param ev
-   * @param payload
+   * Real logic of single event to be dispatched
+   * @param ev Single event name
+   * @param payload Datas to be dispatched
    */
   private fireEvent(ev: string, payload: any = null) {
     const firePayload = { detail: payload }
 
-    // 不支持浏览器事件处理方案就降级到队列处理
+    // Downgrade to queue processing if the browser event handling scheme is not supported
     if (!this.canIUseNative) {
-      this.eventListeners[ev].forEach((listener) => listener(firePayload))
+      const eventListeners = this.eventListeners[ev]
+      const eventListenersType = getType(eventListeners)
+
+      if (eventListenersType === DefTypes.ARRAY) {
+        eventListeners.forEach((listener) => listener(firePayload))
+      }
       return
     }
 
