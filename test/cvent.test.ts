@@ -2,19 +2,20 @@ import * as sinon from 'sinon'
 import Cvent from '../src/cvent'
 
 let clock: any
+let cvent: Cvent
 
 describe('Cvent Test', () => {
   beforeEach(() => {
     clock = sinon.useFakeTimers()
+    cvent = new Cvent()
   })
 
   afterEach(() => {
     clock.restore()
+    cvent.destroy()
   })
 
   it('Construct instance of Cvent successfully', () => {
-    const cvent = new Cvent()
-
     expect(cvent).toBeInstanceOf(Cvent)
     expect(cvent).toHaveProperty('on')
     expect(cvent).toHaveProperty('emit')
@@ -28,8 +29,6 @@ describe('Cvent Test', () => {
   })
 
   it('Cvent should on and emit event well', () => {
-    const cvent = new Cvent()
-
     const func1 = jest.fn()
     cvent.on('click1', func1)
     cvent.emit('click1')
@@ -44,10 +43,21 @@ describe('Cvent Test', () => {
     cvent.on(['click3_1', 'click3_2', 'click3_3'], func3)
     cvent.emit(['click3_1', 'click3_2', 'click3_3'])
     expect(func3).toBeCalledTimes(3)
+
+    const func4 = function (data: any) {
+      expect(data.detail).toBeNull()
+    }
+    cvent.on('click4', func4)
+    cvent.emit('click4')
+
+    const func5 = function (data: any) {
+      expect(data.detail).toEqual(1)
+    }
+    cvent.on('click5', func5)
+    cvent.emit('click5', 1)
   })
 
   it('Cvent should on、emit and off event well', () => {
-    const cvent = new Cvent()
     const func1 = jest.fn()
 
     cvent.on('click1', func1)
@@ -80,8 +90,6 @@ describe('Cvent Test', () => {
   })
 
   it('Cvent should emitDebounce event well', () => {
-    const cvent = new Cvent()
-
     const func1 = jest.fn()
     cvent.on('click1', func1)
     cvent.emitDebounce('click1', { name: 'Cvent' })
@@ -97,10 +105,23 @@ describe('Cvent Test', () => {
 
     clock.tick(5000)
     expect(func2).toBeCalledTimes(0)
+
+    const func3 = function (data: any) {
+      expect(data.detail).toEqual(1)
+    }
+    cvent.on('click3', func3)
+    cvent.emitDebounce('click3', 1)
+    clock.tick(5000)
+
+    const func4 = function (data: any) {
+      expect(data.detail).toEqual(1)
+    }
+    cvent.on('click4', func4)
+    cvent.emitDebounce('click4', 1, { wait: 1000 })
+    clock.tick(1000)
   })
 
   it('Cvent should emitThrottle event well', () => {
-    const cvent = new Cvent()
     const func1 = jest.fn()
 
     cvent.on('click1', func1)
@@ -114,7 +135,6 @@ describe('Cvent Test', () => {
     const originCustomEvent = window.CustomEvent
     Object.defineProperty(window, 'CustomEvent', { value: null })
 
-    const cvent = new Cvent()
     const func1 = jest.fn()
 
     cvent.on('click1', func1)
@@ -128,21 +148,36 @@ describe('Cvent Test', () => {
     const originAddEventListener = window.addEventListener
     Object.defineProperty(window, 'addEventListener', { value: null })
 
-    const cvent = new Cvent()
+    const otherCvent = new Cvent()
     const func1 = jest.fn()
 
-    cvent.on('click1', func1)
-    cvent.emit('click1')
+    otherCvent.on('click1', func1)
+    otherCvent.emit('click1')
     expect(func1).toBeCalledTimes(1)
 
     const func2 = jest.fn()
-    cvent.on('click2', func2)
-    cvent.off('click2', func2)
-    cvent.emitDebounce('click2', { name: 'Cvent' })
+    otherCvent.on('click2', func2)
+    otherCvent.off('click2', func2)
+    otherCvent.emitDebounce('click2', { name: 'Cvent' })
 
     clock.tick(5000)
     expect(func2).toBeCalledTimes(0)
 
+    const func3 = function (data: any) {
+      expect(data.detail).toBeNull()
+    }
+    otherCvent.on('click3', func3)
+    otherCvent.off('click3')
+    otherCvent.emit('click3')
+
     Object.defineProperty(window, 'CustomEvent', { value: originAddEventListener })
+  })
+
+  it('Destroy should work well', () => {
+    const func = jest.fn()
+    cvent.on('click', func)
+    cvent.destroy()
+    cvent.emit('click')
+    expect(func).toBeCalledTimes(0)
   })
 })
