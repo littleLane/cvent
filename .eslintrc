@@ -6,7 +6,8 @@
     "ecmaFeatures": {
       "modules": true
     },
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
+    "createDefaultProgram": true
   },
   "extends": ["plugin:prettier/recommended"],
   "plugins": ["prettier"],
