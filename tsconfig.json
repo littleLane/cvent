@@ -17,5 +17,5 @@
     "typeRoots": ["node_modules/@types"],
     "types": ["jest", "jsdom"]
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }
