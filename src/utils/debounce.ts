@@ -1,7 +1,7 @@
 export type Procedure = (...args: any[]) => void
 
-export default function debounce<F extends Procedure>(func: F, wait = 5000, immediate = false): F {
-  wait = Number.isSafeInteger(wait) ? wait : 5000
+export default function debounce<F extends Procedure>(func: F, wait = 1000, immediate = false): F {
+  wait = Number.isSafeInteger(wait) ? wait : 1000
 
   let timeoutId: NodeJS.Timeout | undefined
 

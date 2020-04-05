@@ -1,8 +1,8 @@
 export type Procedure = (...args: any[]) => void
 
 interface IOption {
-  leading?: boolean // false 表示禁用第一次执行
-  trailing?: boolean // false 表示禁用停止触发时的回调
+  leading?: boolean // false => first time will not be called
+  trailing?: boolean // false => last time will not be called
 }
 
 export default function throttle<F extends Procedure>(func: F, wait = 500, options: IOption = {}) {
