@@ -9,6 +9,7 @@ describe('Utils Test', () => {
 
   it('noop should work well', () => {
     expect(getType(noop)).toEqual(DefTypes.FUNC)
+    expect(noop()).toBeUndefined()
   })
 
   it('sanitizateEventListener should get correctly returned value', () => {
