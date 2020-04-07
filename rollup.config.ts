@@ -5,10 +5,10 @@ import { eslint } from 'rollup-plugin-eslint'
 
 const pkg = require('./package.json')
 
-const libraryName = 'cvent'
+const libraryName = 'Cvent'
 
 export default {
-  input: `src/${libraryName}.ts`,
+  input: `src/${libraryName.toLocaleLowerCase()}.ts`,
   output: [
     {
       file: pkg.main,
