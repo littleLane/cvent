@@ -57,6 +57,15 @@ describe('Cvent Test', () => {
     cvent.emit('click5', 1)
   })
 
+  it('Cvent should once、emit event well', () => {
+    const func1 = jest.fn()
+
+    cvent.once('click1', func1)
+    cvent.emit('click1')
+    cvent.emit('click1')
+    expect(func1).toBeCalledTimes(1)
+  })
+
   it('Cvent should on、emit and off event well', () => {
     const func1 = jest.fn()
 
@@ -87,6 +96,19 @@ describe('Cvent Test', () => {
     cvent.off(['click4'], func5)
     cvent.emit(['click4'])
     expect(func4).toBeCalledTimes(1)
+
+    const func6 = function (data: any) {
+      expect(data.detail).toBeNull()
+    }
+    cvent.on('click6', func6)
+    cvent.emit('click6', null)
+    cvent.emit('click6')
+
+    const func8 = function (data: any) {
+      expect(data.detail).toEqual({ name: 'cvent' })
+    }
+    cvent.on('click8', func8)
+    cvent.emit('click8', { name: 'cvent' })
   })
 
   it('Cvent should emitDebounce event well', () => {
@@ -119,6 +141,20 @@ describe('Cvent Test', () => {
     cvent.on('click4', func4)
     cvent.emitDebounce('click4', 1, { wait: 1000 })
     clock.tick(1000)
+
+    const func5 = jest.fn()
+    cvent.on('click5', func5)
+    cvent.emitDebounce('click5', 1, { wait: 1000, immediate: true })
+    expect(func5).toBeCalledTimes(1)
+
+    const func6 = function (data: any) {
+      expect(data.detail).toBeNull()
+    }
+    cvent.on('click6', func6)
+    cvent.emitDebounce('click6', null, { wait: 1000 })
+    clock.tick(1000)
+    cvent.emitDebounce('click6', undefined, { wait: 1000 })
+    clock.tick(1000)
   })
 
   it('Cvent should emitThrottle event well', () => {
@@ -129,6 +165,15 @@ describe('Cvent Test', () => {
 
     clock.tick(500)
     expect(func1).toBeCalledTimes(1)
+
+    const func2 = function (data: any) {
+      expect(data.detail).toBeNull()
+    }
+    cvent.on('click2', func2)
+    cvent.emitThrottle('click2', null, { wait: 500 })
+    clock.tick(1000)
+    cvent.emitThrottle('click2', undefined, { wait: 500 })
+    clock.tick(1000)
   })
 
   it('Simulate a lower version browser for IE', () => {
