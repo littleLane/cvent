@@ -21,3 +21,16 @@ export interface IEventEachCallbackParams {
 export type IEventEachCallback = (val: IEventEachCallbackParams) => void
 
 export type ICustomEventListener = (evt: Event | { detail: any }) => void
+
+export interface IEventListenerObj {
+  listener: ICustomEventListener
+  once: boolean
+}
+
+export interface IEventListener {
+  [key: string]: IEventListenerObj[]
+}
+
+export interface IOnOptions {
+  once?: boolean
+}

@@ -1,5 +1,13 @@
 import { DefTypes } from './utils/constants'
-import { ICustomEventListener, IEmitDebounceOptions, IEmitThrottleOptions, IFireEvent } from './types'
+import {
+  ICustomEventListener,
+  IEmitDebounceOptions,
+  IEmitThrottleOptions,
+  IFireEvent,
+  IEventListener,
+  IEventListenerObj,
+  IOnOptions,
+} from './types'
 import debounce from './utils/debounce'
 import { enhanceForEachEvent, getType } from './utils/utils'
 import throttle from './utils/throttle'
@@ -7,7 +15,7 @@ import throttle from './utils/throttle'
 export default class Cvent {
   private target: EventTarget
   private canIUseNative: boolean
-  private eventListeners: Record<string, ICustomEventListener[]> = {}
+  private eventListeners: IEventListener = {}
   private debounceEventEmiters: Record<string, IFireEvent> = {}
   private throttleEventEmiters: Record<string, IFireEvent> = {}
 
@@ -25,15 +33,20 @@ export default class Cvent {
    * @param event Multiple names of events to be registered
    * @param eventlistener Event handler
    */
-  on(event: string | string[], eventlistener: ICustomEventListener): Cvent {
+  on(event: string | string[], eventlistener: ICustomEventListener, options: IOnOptions = { once: false }): Cvent {
     enhanceForEachEvent({
       event,
       listener: eventlistener,
       eachCallback: ({ eventName, listener }) => {
+        const eventListenerObj = {
+          listener,
+          ...options,
+        } as IEventListenerObj
+
         if (eventName in this.eventListeners) {
-          this.eventListeners[eventName].push(listener!)
+          this.eventListeners[eventName].push(eventListenerObj)
         } else {
-          this.eventListeners[eventName] = [listener!]
+          this.eventListeners[eventName] = [eventListenerObj]
         }
 
         if (this.canIUseNative) {
@@ -43,6 +56,16 @@ export default class Cvent {
     })
 
     return this
+  }
+
+  /**
+   * register events will to be called once
+   *    Support multiple events(Strings are separated by commas or array of strings)
+   * @param event
+   * @param eventlistener
+   */
+  once(event: string | string[], eventlistener: ICustomEventListener): Cvent {
+    return this.on(event, eventlistener, { once: true })
   }
 
   /**
@@ -64,18 +87,18 @@ export default class Cvent {
             this.target.removeEventListener(eventName, eventlistener, false)
           }
 
-          const indexOf = evListeners.indexOf(eventlistener)
-
-          if (indexOf > -1) {
-            evListeners.splice(indexOf, 1)
-          }
+          Object.values(evListeners).forEach((evListener, index) => {
+            if (evListener.listener === eventlistener) {
+              evListeners.splice(index, 1)
+            }
+          })
 
           return
         }
 
         if (this.canIUseNative) {
-          evListeners.forEach((evListener: ICustomEventListener) => {
-            this.target.removeEventListener(eventName, evListener, false)
+          evListeners.forEach((evListener: IEventListenerObj) => {
+            this.target.removeEventListener(eventName, evListener.listener, false)
           })
         }
 
@@ -87,7 +110,7 @@ export default class Cvent {
   }
 
   /**
-   * dispatch events
+   * emit events
    *    Support multiple events(Strings are separated by commas or array of strings)
    * @param event Multiple names of events to be dispatched
    * @param payload Event handler
@@ -104,7 +127,7 @@ export default class Cvent {
   }
 
   /**
-   * dispatch events by debounce
+   * emit events by debounce
    *    Support multiple events(Strings are separated by commas or array of strings)
    * @param event Multiple event name to be dispatched
    * @param payload Datas to be dispatched
@@ -128,7 +151,7 @@ export default class Cvent {
   }
 
   /**
-   * dispatch events by throttle
+   * emit events by throttle
    *    Support multiple events(Strings are separated by commas or array of strings)
    * @param event Multiple event name to be dispatched
    * @param payload Datas to be dispatched
@@ -155,11 +178,14 @@ export default class Cvent {
     return this
   }
 
+  /**
+   * off all events, clear all caches
+   */
   destroy() {
     if (this.canIUseNative) {
-      Object.keys(this.eventListeners).forEach((eventName: string) => {
+      for (const eventName in this.eventListeners) {
         this.off(eventName)
-      })
+      }
     }
     this.eventListeners = {}
     this.debounceEventEmiters = {}
@@ -171,30 +197,35 @@ export default class Cvent {
    * @param ev Single event name
    * @param payload Datas to be dispatched
    */
-  private fireEvent(ev: string, payload: any = null) {
+  private fireEvent(ev: string, payload: any) {
     const firePayload = { detail: payload }
+    if (this.canIUseNative) {
+      let customEvent: CustomEvent
 
-    // Downgrade to queue processing if the browser event handling scheme is not supported
-    if (!this.canIUseNative) {
-      const eventListeners = this.eventListeners[ev]
-      const eventListenersType = getType(eventListeners)
-
-      if (eventListenersType === DefTypes.ARRAY) {
-        eventListeners.forEach((listener) => listener(firePayload))
+      try {
+        customEvent = new CustomEvent(ev, firePayload)
+      } catch (error) {
+        // for IE 9 ~ 11
+        customEvent = document.createEvent('CustomEvent')
+        customEvent.initCustomEvent(ev, false, false, payload)
       }
-      return
+
+      this.target.dispatchEvent(customEvent)
     }
 
-    let customEvent: CustomEvent
+    const eventListeners = this.eventListeners[ev]
+    const eventListenersType = getType(eventListeners)
 
-    try {
-      customEvent = new CustomEvent(ev, firePayload)
-    } catch (error) {
-      // for IE 9 ~ 11
-      customEvent = document.createEvent('CustomEvent')
-      customEvent.initCustomEvent(ev, false, false, payload)
+    if (eventListenersType === DefTypes.ARRAY) {
+      eventListeners.forEach(({ listener, once }) => {
+        if (once) {
+          this.off(ev, listener)
+        }
+
+        if (!this.canIUseNative) {
+          listener(firePayload)
+        }
+      })
     }
-
-    this.target.dispatchEvent(customEvent)
   }
 }
