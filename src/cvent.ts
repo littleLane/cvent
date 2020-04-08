@@ -1,8 +1,7 @@
 import { DefTypes } from './utils/constants'
 import {
   ICustomEventListener,
-  IEmitDebounceOptions,
-  IEmitThrottleOptions,
+  IStrategyOptions,
   IFireEvent,
   IEventListener,
   IEventListenerObj,
@@ -133,14 +132,18 @@ export default class Cvent {
    * @param payload Datas to be dispatched
    * @param options Option of debounce
    */
-  emitDebounce(event: string | string[], payload: any = null, { wait, immediate }: IEmitDebounceOptions = {}): Cvent {
+  emitDebounce(
+    event: string | string[],
+    payload: any = null,
+    { wait, leading, trailing }: IStrategyOptions = {}
+  ): Cvent {
     enhanceForEachEvent({
       event,
       eachCallback: ({ eventName }) => {
-        const cacheEventName = `${eventName}-${wait}-${immediate}`
+        const cacheEventName = `${eventName}-${wait}-${leading}-${trailing}`
 
         if (!this.debounceEventEmiters[cacheEventName]) {
-          this.debounceEventEmiters[cacheEventName] = debounce(this.fireEvent, wait, immediate)
+          this.debounceEventEmiters[cacheEventName] = debounce(this.fireEvent, wait, { leading, trailing })
         }
 
         this.debounceEventEmiters[cacheEventName].call(this, eventName, payload)
@@ -160,7 +163,7 @@ export default class Cvent {
   emitThrottle(
     event: string | string[],
     payload: any = null,
-    { wait, leading, trailing }: IEmitThrottleOptions = {}
+    { wait, leading, trailing }: IStrategyOptions = {}
   ): Cvent {
     enhanceForEachEvent({
       event,

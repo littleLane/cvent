@@ -1,11 +1,8 @@
+import { IMemoOption } from '../types'
+
 export type Procedure = (...args: any[]) => void
 
-interface IOption {
-  leading?: boolean // false => first time will not be called
-  trailing?: boolean // false => last time will not be called
-}
-
-export default function throttle<F extends Procedure>(func: F, wait = 500, options: IOption = {}) {
+export default function throttle<F extends Procedure>(func: F, wait = 500, options: IMemoOption = {}) {
   wait = Number.isSafeInteger(wait) ? wait : 500
 
   let timeoutId: NodeJS.Timeout | undefined

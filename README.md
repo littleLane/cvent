@@ -99,7 +99,7 @@ ThrottleOptions is an object!
 
 - [x] Only respond to the first trigger of the event
 - [ ] Support the specified number of responses
-- [ ] Debounce supports last times will be called
+- [x] Debounce supports last times will be called
 - [ ] Keep improve...
 
 ### License
