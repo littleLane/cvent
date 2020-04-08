@@ -1,7 +1,10 @@
 export type IFireEvent = (ev: string, payload?: any) => void
 
-export interface IEmitThrottleOptions {
+export interface IStrategyOptions extends IMemoOption {
   wait?: number
+}
+
+export interface IMemoOption {
   leading?: boolean // false => not first time will be called
   trailing?: boolean // false => not last time will be called
 }
