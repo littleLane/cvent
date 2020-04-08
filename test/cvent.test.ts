@@ -144,7 +144,7 @@ describe('Cvent Test', () => {
 
     const func5 = jest.fn()
     cvent.on('click5', func5)
-    cvent.emitDebounce('click5', 1, { wait: 1000, immediate: true })
+    cvent.emitDebounce('click5', 1, { wait: 1000, leading: true })
     expect(func5).toBeCalledTimes(1)
 
     const func6 = function (data: any) {
