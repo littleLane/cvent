@@ -33,6 +33,16 @@ describe('Throttle Test', () => {
       throttledFunc1()
     }
     expect(func1).toHaveBeenCalledTimes(5)
+
+    // Call it several times with 250ms between each call
+    // 250ms 后 [✔, 1, ✔, 3, ✔, 5, ✔, 7, ✔, ✔] => first time and last time will be called
+    const func2 = jest.fn()
+    const throttledFunc2 = throttle(func2, Number.MAX_VALUE)
+    for (let i = 0; i < 10; i++) {
+      clock.tick(250)
+      throttledFunc2()
+    }
+    expect(func2).toHaveBeenCalledTimes(5)
   })
 
   it('should not called the first time', () => {
