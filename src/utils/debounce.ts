@@ -1,30 +1,29 @@
+import { IMemoOption } from '../types'
+
 export type Procedure = (...args: any[]) => void
 
-export default function debounce<F extends Procedure>(func: F, wait = 1000, immediate = false): F {
+export default function debounce<F extends Procedure>(func: F, wait = 1000, options: IMemoOption = {}): F {
   wait = Number.isSafeInteger(wait) ? wait : 1000
 
   let timeoutId: NodeJS.Timeout | undefined
 
   return function (this: any, ...args: any[]) {
     const context = this
-
-    const doLater = function () {
-      timeoutId = undefined
-      if (!immediate) {
-        func.apply(context, args)
-      }
-    }
-
-    const shouldCallNow = immediate && timeoutId === undefined
+    const shouldCallNow = options.leading && timeoutId === undefined
 
     if (timeoutId !== undefined) {
       clearTimeout(timeoutId)
     }
 
-    timeoutId = setTimeout(doLater, wait)
-
     if (shouldCallNow) {
       func.apply(context, args)
+    } else {
+      timeoutId = setTimeout(function () {
+        timeoutId = undefined
+        if (options.trailing !== false) {
+          func.apply(context, args)
+        }
+      }, wait)
     }
   } as any
 }
