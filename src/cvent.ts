@@ -18,7 +18,7 @@ export default class Cvent {
   private debounceEventEmiters: Record<string, IFireEvent> = {}
   private throttleEventEmiters: Record<string, IFireEvent> = {}
 
-  constructor(target: EventTarget = window) {
+  constructor(target: EventTarget = globalThis) {
     this.target = target
     this.canIUseNative =
       !!this.target &&
