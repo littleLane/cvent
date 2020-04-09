@@ -31,7 +31,7 @@
     "lint": "eslint --ext .ts src/ --ext .ts test/",
     "lint:fix": "eslint --fix --ext .ts src/ --ext .ts test/",
     "prebuild": "rimraf dist",
-    "build": "rollup -c rollup.config.build.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "build": "tsc --module commonjs && rollup -c rollup.config.build.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "npm run prebuild & rollup -c rollup.config.ts -w src",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",

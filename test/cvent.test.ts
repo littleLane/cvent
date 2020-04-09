@@ -177,8 +177,8 @@ describe('Cvent Test', () => {
   })
 
   it('Simulate a lower version browser for IE', () => {
-    const originCustomEvent = window.CustomEvent
-    Object.defineProperty(window, 'CustomEvent', { value: null })
+    const originCustomEvent = globalThis.CustomEvent
+    Object.defineProperty(globalThis, 'CustomEvent', { value: null })
 
     const func1 = jest.fn()
 
@@ -186,12 +186,12 @@ describe('Cvent Test', () => {
     cvent.emit('click1')
     expect(func1).toBeCalledTimes(1)
 
-    Object.defineProperty(window, 'CustomEvent', { value: originCustomEvent })
+    Object.defineProperty(globalThis, 'CustomEvent', { value: originCustomEvent })
   })
 
   it('Simulate a non-browser environment', () => {
-    const originAddEventListener = window.addEventListener
-    Object.defineProperty(window, 'addEventListener', { value: null })
+    const originAddEventListener = globalThis.addEventListener
+    Object.defineProperty(globalThis, 'addEventListener', { value: null })
 
     const otherCvent = new Cvent()
     const func1 = jest.fn()
@@ -215,7 +215,7 @@ describe('Cvent Test', () => {
     otherCvent.off('click3')
     otherCvent.emit('click3')
 
-    Object.defineProperty(window, 'CustomEvent', { value: originAddEventListener })
+    Object.defineProperty(globalThis, 'CustomEvent', { value: originAddEventListener })
   })
 
   it('Destroy should work well', () => {
