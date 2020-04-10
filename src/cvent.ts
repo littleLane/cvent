@@ -12,11 +12,13 @@ import { enhanceForEachEvent, getType } from './utils/utils'
 import throttle from './utils/throttle'
 
 export default class Cvent {
-  private target: EventTarget
+  private target: EventTarget | null
   private canIUseNative: boolean
-  private eventListeners: IEventListener = {}
-  private debounceEventEmiters: Record<string, IFireEvent> = {}
-  private throttleEventEmiters: Record<string, IFireEvent> = {}
+  private eventListeners: IEventListener | null = {}
+  private debounceEventListeners: Record<string, IFireEvent> | null = {}
+  private throttleEventListeners: Record<string, IFireEvent> | null = {}
+
+  private static instance: Cvent | null
 
   constructor(target: EventTarget = globalThis) {
     this.target = target
@@ -24,6 +26,18 @@ export default class Cvent {
       !!this.target &&
       getType(target.addEventListener) === DefTypes.FUNC &&
       getType(target.removeEventListener) === DefTypes.FUNC
+  }
+
+  /**
+   * Support return singleton
+   * @param target
+   */
+  static getInstance(target: EventTarget = globalThis): Cvent {
+    if (!this.instance || this.instance.target !== target) {
+      this.instance = new Cvent(target)
+    }
+
+    return this.instance
   }
 
   /**
@@ -42,13 +56,15 @@ export default class Cvent {
           ...options,
         } as IEventListenerObj
 
+        this.eventListeners = this.eventListeners || {}
+
         if (eventName in this.eventListeners) {
           this.eventListeners[eventName].push(eventListenerObj)
         } else {
           this.eventListeners[eventName] = [eventListenerObj]
         }
 
-        if (this.canIUseNative) {
+        if (this.canIUseNative && this.target) {
           this.target.addEventListener(eventName, listener!, false)
         }
       },
@@ -79,10 +95,12 @@ export default class Cvent {
       event,
       listener: eventlistener,
       eachCallback: ({ eventName }) => {
+        this.eventListeners = this.eventListeners || {}
+
         const evListeners = this.eventListeners[eventName]
 
         if (eventlistener) {
-          if (this.canIUseNative) {
+          if (this.canIUseNative && this.target) {
             this.target.removeEventListener(eventName, eventlistener, false)
           }
 
@@ -97,7 +115,7 @@ export default class Cvent {
 
         if (this.canIUseNative) {
           evListeners.forEach((evListener: IEventListenerObj) => {
-            this.target.removeEventListener(eventName, evListener.listener, false)
+            this.target!.removeEventListener(eventName, evListener.listener, false)
           })
         }
 
@@ -140,13 +158,15 @@ export default class Cvent {
     enhanceForEachEvent({
       event,
       eachCallback: ({ eventName }) => {
+        this.debounceEventListeners = this.debounceEventListeners || {}
+
         const cacheEventName = `${eventName}-${wait}-${leading}-${trailing}`
 
-        if (!this.debounceEventEmiters[cacheEventName]) {
-          this.debounceEventEmiters[cacheEventName] = debounce(this.fireEvent, wait, { leading, trailing })
+        if (!this.debounceEventListeners[cacheEventName]) {
+          this.debounceEventListeners[cacheEventName] = debounce(this.fireEvent, wait, { leading, trailing })
         }
 
-        this.debounceEventEmiters[cacheEventName].call(this, eventName, payload)
+        this.debounceEventListeners[cacheEventName].call(this, eventName, payload)
       },
     })
 
@@ -168,13 +188,15 @@ export default class Cvent {
     enhanceForEachEvent({
       event,
       eachCallback: ({ eventName }) => {
+        this.throttleEventListeners = this.throttleEventListeners || {}
+
         const cacheEventName = `${eventName}-${wait}-${leading}-${trailing}`
 
-        if (!this.throttleEventEmiters[cacheEventName]) {
-          this.throttleEventEmiters[cacheEventName] = throttle(this.fireEvent, wait, { leading, trailing })
+        if (!this.throttleEventListeners[cacheEventName]) {
+          this.throttleEventListeners[cacheEventName] = throttle(this.fireEvent, wait, { leading, trailing })
         }
 
-        this.throttleEventEmiters[cacheEventName].call(this, eventName, payload)
+        this.throttleEventListeners[cacheEventName].call(this, eventName, payload)
       },
     })
 
@@ -190,9 +212,13 @@ export default class Cvent {
         this.off(eventName)
       }
     }
-    this.eventListeners = {}
-    this.debounceEventEmiters = {}
-    this.throttleEventEmiters = {}
+
+    Cvent.instance = null
+    this.target = null
+    this.canIUseNative = false
+    this.eventListeners = null
+    this.debounceEventListeners = null
+    this.throttleEventListeners = null
   }
 
   /**
@@ -202,7 +228,8 @@ export default class Cvent {
    */
   private fireEvent(ev: string, payload: any) {
     const firePayload = { detail: payload }
-    if (this.canIUseNative) {
+
+    if (this.canIUseNative && this.target) {
       let customEvent: CustomEvent
 
       try {
@@ -215,6 +242,8 @@ export default class Cvent {
 
       this.target.dispatchEvent(customEvent)
     }
+
+    this.eventListeners = this.eventListeners || {}
 
     const eventListeners = this.eventListeners[ev]
     const eventListenersType = getType(eventListeners)

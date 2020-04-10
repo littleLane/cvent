@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import typescript from 'rollup-plugin-typescript2'
 import { eslint } from 'rollup-plugin-eslint'
 import { terser } from 'rollup-plugin-terser'
+import analyze from 'rollup-plugin-analyzer'
 
 const pkg = require('./package.json')
 
@@ -54,6 +55,7 @@ export default [
           warnings: false,
         },
       }),
+      analyze(),
     ]),
   },
   {

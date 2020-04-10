@@ -2,6 +2,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import typescript from 'rollup-plugin-typescript2'
 import { eslint } from 'rollup-plugin-eslint'
+import analyze from 'rollup-plugin-analyzer'
 
 const pkg = require('./package.json')
 
@@ -29,5 +30,6 @@ export default {
     // which external modules to include in the bundle
     // https://github.com/rollup/rollup-plugin-node-resolve#usage
     resolve(),
+    analyze(),
   ],
 }

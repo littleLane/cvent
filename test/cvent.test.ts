@@ -28,6 +28,17 @@ describe('Cvent Test', () => {
     expect(cvent1).toHaveProperty('off')
   })
 
+  it('Should returns the correct singleton', () => {
+    expect(cvent).toEqual(Cvent.getInstance())
+    expect(cvent).not.toEqual(Cvent.getInstance({} as EventTarget))
+
+    cvent.destroy()
+    const newCvent = Cvent.getInstance()
+    expect(cvent).not.toEqual(newCvent)
+    expect(newCvent).toEqual(Cvent.getInstance())
+    expect(newCvent).not.toEqual(Cvent.getInstance({} as EventTarget))
+  })
+
   it('Cvent should on and emit event well', () => {
     const func1 = jest.fn()
     cvent.on('click1', func1)
@@ -55,6 +66,13 @@ describe('Cvent Test', () => {
     }
     cvent.on('click5', func5)
     cvent.emit('click5', 1)
+
+    const func6 = jest.fn()
+    cvent.on('click6', func6)
+    cvent.destroy()
+    cvent.on('click6', func6)
+    cvent.emit('click6')
+    expect(func6).toBeCalledTimes(1)
   })
 
   it('Cvent should once、emit event well', () => {
@@ -109,6 +127,11 @@ describe('Cvent Test', () => {
     }
     cvent.on('click8', func8)
     cvent.emit('click8', { name: 'cvent' })
+
+    cvent.destroy()
+    cvent.off('clic5')
+    cvent.emit('click5')
+    expect(func5).toBeCalledTimes(0)
   })
 
   it('Cvent should emitDebounce event well', () => {
@@ -155,6 +178,13 @@ describe('Cvent Test', () => {
     clock.tick(1000)
     cvent.emitDebounce('click6', undefined, { wait: 1000 })
     clock.tick(1000)
+
+    const func7 = jest.fn()
+    cvent.on('click7', func7)
+    cvent.destroy()
+    cvent.emitDebounce('click7', null, { wait: 1000 })
+    clock.tick(1000)
+    expect(func7).toBeCalledTimes(0)
   })
 
   it('Cvent should emitThrottle event well', () => {
@@ -174,6 +204,13 @@ describe('Cvent Test', () => {
     clock.tick(1000)
     cvent.emitThrottle('click2', undefined, { wait: 500 })
     clock.tick(1000)
+
+    const func3 = jest.fn()
+    cvent.on('click3', func3)
+    cvent.destroy()
+    cvent.emitThrottle('click3')
+    clock.tick(500)
+    expect(func3).toBeCalledTimes(0)
   })
 
   it('Simulate a lower version browser for IE', () => {
