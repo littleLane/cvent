@@ -1,5 +1,6 @@
 import * as sinon from 'sinon'
 import Cvent from '../src/cvent'
+import { ICustomEventListener } from '../src/types'
 
 let clock: any
 let cvent: Cvent
@@ -73,6 +74,8 @@ describe('Cvent Test', () => {
     cvent.on('click6', func6)
     cvent.emit('click6')
     expect(func6).toBeCalledTimes(1)
+
+    expect(cvent.on('click7', (undefined as any) as ICustomEventListener)).toEqual(cvent)
   })
 
   it('Cvent should once、emit event well', () => {

@@ -51,6 +51,11 @@ export default class Cvent {
       event,
       listener: eventlistener,
       eachCallback: ({ eventName, listener }) => {
+        if (getType(listener) !== DefTypes.FUNC) {
+          console.error('Registration event failed! Because the event listener only supports function!')
+          return this
+        }
+
         const eventListenerObj = {
           listener,
           ...options,
