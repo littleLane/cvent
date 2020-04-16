@@ -9,3 +9,4 @@ cvent.on('click', (data) => {
 cvent.emit('click', { name: 'cvent1' })
 cvent.off('click')
 cvent.emit('click', { name: 'cvent2' })
+cvent.emit('error', new Error('error'))

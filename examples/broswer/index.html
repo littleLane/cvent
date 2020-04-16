@@ -12,6 +12,7 @@
       <ul class="test-case-list">
         <li id="cventBase" class="test-case-item">Cvent base Tester</li>
         <li id="cventOnce" class="test-case-item">Cvent once Tester</li>
+        <li id="cventError" class="test-case-item">Cvent error Tester</li>
       </ul>
     </div>
     <script src="../../dist/cvent.js"></script>
@@ -19,6 +20,7 @@
       const listener = (e) => console.log(e)
       const cvent = new Cvent()
       cvent.on('a', listener)
+      cvent.on('error', (e) => console.log(e))
       cvent.once('b', listener)
       document.querySelector('#cventBase').addEventListener('click', function () {
         cvent.emit('a')
@@ -26,6 +28,10 @@
 
       document.querySelector('#cventOnce').addEventListener('click', function () {
         cvent.emit('b')
+      })
+
+      document.querySelector('#cventError').addEventListener('click', function () {
+        cvent.emit('error', new Error('error'))
       })
     </script>
   </body>
