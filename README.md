@@ -104,4 +104,4 @@ ThrottleOptions is an object!
 
 ### License
 
-[MIT](https://github.com/reduxjs/redux/blob/master/LICENSE.md)
+[MIT](https://github.com/littleLane/cvent/blob/master/LICENSE)

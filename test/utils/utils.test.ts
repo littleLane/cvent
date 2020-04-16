@@ -1,15 +1,10 @@
-import { sanitizateEventListener, noop, enhanceForEachEvent, getType } from '../../src/utils/utils'
+import { sanitizateEventListener, enhanceForEachEvent, getType } from '../../src/utils/utils'
 import { IEventEachCallbackParams } from '../../src/types'
 import { DefTypes } from '../../src/utils/constants'
 
 describe('Utils Test', () => {
   it('getType should get correctly returned value', () => {
     expect(getType('')).toEqual(DefTypes.STRING)
-  })
-
-  it('noop should work well', () => {
-    expect(getType(noop)).toEqual(DefTypes.FUNC)
-    expect(noop()).toBeUndefined()
   })
 
   it('sanitizateEventListener should get correctly returned value', () => {
@@ -30,17 +25,17 @@ describe('Utils Test', () => {
 
     expect(sanitizateEventListener(['click'], null as any)).toEqual({
       events: ['click'],
-      harmlessListener: noop,
+      harmlessListener: null,
     })
 
     expect(sanitizateEventListener([], null as any)).toEqual({
       events: [],
-      harmlessListener: noop,
+      harmlessListener: null,
     })
 
     expect(sanitizateEventListener(null as any, null as any)).toEqual({
       events: [],
-      harmlessListener: noop,
+      harmlessListener: null,
     })
   })
 

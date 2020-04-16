@@ -232,6 +232,18 @@ export default class Cvent {
    * @param payload Datas to be dispatched
    */
   private fireEvent(ev: string, payload: any) {
+    this.eventListeners = this.eventListeners || {}
+
+    const eventListeners = this.eventListeners[ev]
+    const eventListenersType = getType(eventListeners)
+
+    if (eventListenersType !== DefTypes.ARRAY || !eventListeners.length) {
+      if (ev === 'error' && payload instanceof Error) {
+        throw payload
+      }
+      return
+    }
+
     const firePayload = { detail: payload }
 
     if (this.canIUseNative && this.target) {
@@ -248,21 +260,14 @@ export default class Cvent {
       this.target.dispatchEvent(customEvent)
     }
 
-    this.eventListeners = this.eventListeners || {}
+    eventListeners.forEach(({ listener, once }) => {
+      if (once) {
+        this.off(ev, listener)
+      }
 
-    const eventListeners = this.eventListeners[ev]
-    const eventListenersType = getType(eventListeners)
-
-    if (eventListenersType === DefTypes.ARRAY) {
-      eventListeners.forEach(({ listener, once }) => {
-        if (once) {
-          this.off(ev, listener)
-        }
-
-        if (!this.canIUseNative) {
-          listener(firePayload)
-        }
-      })
-    }
+      if (!this.canIUseNative) {
+        listener(firePayload)
+      }
+    })
   }
 }

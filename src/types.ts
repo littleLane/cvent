@@ -23,7 +23,11 @@ export interface IEventEachCallbackParams {
 
 export type IEventEachCallback = (val: IEventEachCallbackParams) => void
 
-export type ICustomEventListener = (evt: Event | { detail: any }) => void
+export interface ICustomEvent extends Partial<Event> {
+  detail?: any
+}
+
+export type ICustomEventListener = (evt: ICustomEvent) => void
 
 export interface IEventListenerObj {
   listener: ICustomEventListener

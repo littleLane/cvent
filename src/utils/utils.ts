@@ -5,8 +5,6 @@ export function getType(data: any): string {
   return Object.prototype.toString.call(data).replace(/\[object\s|\]/g, '')
 }
 
-export const noop = () => {}
-
 /**
  * 格式化 event 和 listener
  * @param event
@@ -28,16 +26,9 @@ export function sanitizateEventListener(
     events = event as string[]
   }
 
-  let harmlessListener = listener
-  const listenerType = getType(listener)
-
-  if (listenerType !== DefTypes.FUNC && listenerType !== DefTypes.UNDEFINED) {
-    harmlessListener = noop
-  }
-
   return {
     events: events.map((evt) => (getType(evt) === DefTypes.STRING ? evt.trim() : evt.toString())),
-    harmlessListener,
+    harmlessListener: listener,
   }
 }
 

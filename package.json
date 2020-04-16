@@ -1,12 +1,12 @@
 {
   "name": "cvent",
   "version": "0.0.5",
-  "description": "An extension library based on browser events!",
+  "description": "A lightweight extension library based on browser events!",
   "keywords": [
     "cvent",
-    "customeEvent",
     "event",
     "pubsub",
+    "CustomEvent",
     "eventEmitter"
   ],
   "main": "dist/cvent.js",
