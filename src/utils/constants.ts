@@ -7,6 +7,7 @@ export enum DefTypes {
   DATE = 'Date',
   EXCEPTION = 'Exception',
   FUNC = 'Function',
+  AFUNC = 'AsyncFunction',
   UNDEFINED = 'Undefined',
   INVALID_ERROR = 'Script error.',
   REQUEST = 'Request',
