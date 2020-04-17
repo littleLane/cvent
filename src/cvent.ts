@@ -19,6 +19,7 @@ export default class Cvent {
   private throttleEventListeners: Record<string, IFireEvent> | null = {}
 
   private static instance: Cvent | null
+  private static defaultMaxListeners: number = 10
 
   constructor(target: EventTarget = globalThis) {
     this.target = target
@@ -51,7 +52,8 @@ export default class Cvent {
       event,
       listener: eventlistener,
       eachCallback: ({ eventName, listener }) => {
-        if (getType(listener) !== DefTypes.FUNC) {
+        const listenerType = getType(listener)
+        if (listenerType !== DefTypes.FUNC && listenerType !== DefTypes.AFUNC) {
           console.error('Registration event failed! Because the event listener only supports function!')
           return this
         }
@@ -64,6 +66,12 @@ export default class Cvent {
         this.eventListeners = this.eventListeners || {}
 
         if (eventName in this.eventListeners) {
+          if (this.eventListeners[eventName].length > Cvent.defaultMaxListeners) {
+            console.warn(
+              'By default, each event can register up to 10 listeners for memory leaks, but then you can modify the default limit through setMaxListeners!'
+            )
+          }
+
           this.eventListeners[eventName].push(eventListenerObj)
         } else {
           this.eventListeners[eventName] = [eventListenerObj]
@@ -224,6 +232,14 @@ export default class Cvent {
     this.eventListeners = null
     this.debounceEventListeners = null
     this.throttleEventListeners = null
+  }
+
+  getMaxListeners() {
+    return Cvent.defaultMaxListeners
+  }
+
+  setMaxListeners(maxListeners: number) {
+    Cvent.defaultMaxListeners = maxListeners
   }
 
   /**
