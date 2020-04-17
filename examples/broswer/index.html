@@ -13,6 +13,7 @@
         <li id="cventBase" class="test-case-item">Cvent base Tester</li>
         <li id="cventOnce" class="test-case-item">Cvent once Tester</li>
         <li id="cventError" class="test-case-item">Cvent error Tester</li>
+        <li id="cventAsync" class="test-case-item">Cvent async Tester</li>
       </ul>
     </div>
     <script src="../../dist/cvent.js"></script>
@@ -22,6 +23,7 @@
       cvent.on('a', listener)
       cvent.on('error', (e) => console.log(e))
       cvent.once('b', listener)
+
       document.querySelector('#cventBase').addEventListener('click', function () {
         cvent.emit('a')
       })
@@ -32,6 +34,14 @@
 
       document.querySelector('#cventError').addEventListener('click', function () {
         cvent.emit('error', new Error('error'))
+      })
+
+      cvent.on('asyncEvent', async () => {
+        throw new Error('kaboom')
+      })
+
+      document.querySelector('#cventAsync').addEventListener('click', function () {
+        cvent.emit('asyncEvent')
       })
     </script>
   </body>

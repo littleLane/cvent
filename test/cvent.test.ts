@@ -280,4 +280,16 @@ describe('Cvent Test', () => {
     })
     cvent.emit('error', mockError)
   })
+
+  it('MaxListeners should work well', () => {
+    expect(cvent.getMaxListeners()).toEqual(10)
+    cvent.setMaxListeners(1)
+    expect(cvent.getMaxListeners()).toEqual(1)
+    const func = jest.fn()
+    cvent.on('click', func)
+    const func1 = jest.fn()
+    cvent.on('click', func1)
+    const func2 = jest.fn()
+    cvent.on('click', func2)
+  })
 })
