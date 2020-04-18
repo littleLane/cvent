@@ -68,8 +68,7 @@
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/test/",
-      "/src/typings.d.ts"
+      "/test/"
     ],
     "coverageThreshold": {
       "global": {
