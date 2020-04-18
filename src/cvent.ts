@@ -11,6 +11,8 @@ import debounce from './utils/debounce'
 import { enhanceForEachEvent, getType } from './utils/utils'
 import throttle from './utils/throttle'
 
+const isNodeEnv = typeof window === undefined
+
 export default class Cvent {
   private target: EventTarget | null
   private canIUseNative: boolean
@@ -21,7 +23,7 @@ export default class Cvent {
   private static instance: Cvent | null
   private static defaultMaxListeners: number = 10
 
-  constructor(target: EventTarget = globalThis) {
+  constructor(target: EventTarget = isNodeEnv ? global : window) {
     this.target = target
     this.canIUseNative =
       !!this.target &&
@@ -33,7 +35,7 @@ export default class Cvent {
    * Support return singleton
    * @param target
    */
-  static getInstance(target: EventTarget = globalThis): Cvent {
+  static getInstance(target: EventTarget = isNodeEnv ? global : window): Cvent {
     if (!this.instance || this.instance.target !== target) {
       this.instance = new Cvent(target)
     }
