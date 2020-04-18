@@ -98,7 +98,6 @@ ThrottleOptions is an object!
 ### Future Features
 
 - [x] Only respond to the first trigger of the event
-- [ ] Support the specified number of responses
 - [x] Debounce supports last times will be called
 - [ ] Keep improve...
 
