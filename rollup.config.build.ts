@@ -29,7 +29,7 @@ const basicPlugins = [
 
 export default [
   {
-    input: `src/${libraryName}.ts`,
+    input: `src/${libraryName.toLowerCase()}.ts`,
     output: {
       file: pkg.main,
       format: 'umd',
@@ -39,7 +39,7 @@ export default [
     plugins: basicPlugins,
   },
   {
-    input: `src/${libraryName}.ts`,
+    input: `src/${libraryName.toLowerCase()}.ts`,
     output: {
       file: pkg.unpkg,
       format: 'umd',
@@ -59,7 +59,7 @@ export default [
     ]),
   },
   {
-    input: `src/${libraryName}.ts`,
+    input: `src/${libraryName.toLowerCase()}.ts`,
     output: {
       file: pkg.module,
       format: 'es',
