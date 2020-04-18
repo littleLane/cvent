@@ -20,7 +20,7 @@
   "author": "littleLane <lzz857183384@163.com>",
   "repository": {
     "type": "git",
-    "url": "git@github.com:littleLane/cvent.git"
+    "url": "https://github.com/littleLane/cvent.git"
   },
   "sideEffects": false,
   "license": "MIT",
@@ -100,6 +100,7 @@
     "@typescript-eslint/parser": "^2.26.0",
     "colors": "^1.4.0",
     "commitizen": "^4.0.3",
+    "core-js": "^3.6.5",
     "coveralls": "^3.0.11",
     "cz-conventional-changelog": "^3.1.0",
     "eslint-config-prettier": "^6.10.1",
