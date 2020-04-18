@@ -11,8 +11,10 @@ import debounce from './utils/debounce'
 import { enhanceForEachEvent, getType } from './utils/utils'
 import throttle from './utils/throttle'
 
+const isNodeEnv = typeof window === undefined
+
 export default class Cvent {
-  private target: EventTarget | null
+  private target: (Window & typeof globalThis) | NodeJS.Global | null
   private canIUseNative: boolean
   private eventListeners: IEventListener | null = {}
   private debounceEventListeners: Record<string, IFireEvent> | null = {}
@@ -21,19 +23,19 @@ export default class Cvent {
   private static instance: Cvent | null
   private static defaultMaxListeners: number = 10
 
-  constructor(target: EventTarget = globalThis) {
+  constructor(target = isNodeEnv ? global : window) {
     this.target = target
     this.canIUseNative =
       !!this.target &&
-      getType(target.addEventListener) === DefTypes.FUNC &&
-      getType(target.removeEventListener) === DefTypes.FUNC
+      getType((target as any).addEventListener) === DefTypes.FUNC &&
+      getType((target as any).removeEventListener) === DefTypes.FUNC
   }
 
   /**
    * Support return singleton
    * @param target
    */
-  static getInstance(target: EventTarget = globalThis): Cvent {
+  static getInstance(target = isNodeEnv ? global : window): Cvent {
     if (!this.instance || this.instance.target !== target) {
       this.instance = new Cvent(target)
     }
@@ -79,7 +81,7 @@ export default class Cvent {
         }
 
         if (this.canIUseNative && this.target) {
-          this.target.addEventListener(eventName, listener!, false)
+          ;(this.target as any).addEventListener(eventName, listener!, false)
         }
       },
     })
@@ -115,7 +117,7 @@ export default class Cvent {
 
         if (eventlistener) {
           if (this.canIUseNative && this.target) {
-            this.target.removeEventListener(eventName, eventlistener, false)
+            ;(this.target as any).removeEventListener(eventName, eventlistener, false)
           }
 
           Object.values(evListeners).forEach((evListener, index) => {
@@ -129,7 +131,7 @@ export default class Cvent {
 
         if (this.canIUseNative) {
           evListeners.forEach((evListener: IEventListenerObj) => {
-            this.target!.removeEventListener(eventName, evListener.listener, false)
+            ;(this.target as any)!.removeEventListener(eventName, evListener.listener, false)
           })
         }
 
@@ -274,7 +276,7 @@ export default class Cvent {
         customEvent.initCustomEvent(ev, false, false, payload)
       }
 
-      this.target.dispatchEvent(customEvent)
+      ;(this.target as any).dispatchEvent(customEvent)
     }
 
     eventListeners.forEach(({ listener, once }) => {

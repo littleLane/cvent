@@ -22,22 +22,28 @@ describe('Cvent Test', () => {
     expect(cvent).toHaveProperty('emit')
     expect(cvent).toHaveProperty('off')
 
-    const cvent1 = new Cvent((null as unknown) as EventTarget)
+    const cvent1 = new Cvent(null as any)
     expect(cvent1).toBeInstanceOf(Cvent)
     expect(cvent1).toHaveProperty('on')
     expect(cvent1).toHaveProperty('emit')
     expect(cvent1).toHaveProperty('off')
+
+    const originWindow = window
+    window = undefined as any
+    const cvent2 = new Cvent(null as any)
+    expect(cvent2).toBeInstanceOf(Cvent)
+    window = originWindow
   })
 
   it('Should returns the correct singleton', () => {
     expect(cvent).toEqual(Cvent.getInstance())
-    expect(cvent).not.toEqual(Cvent.getInstance({} as EventTarget))
+    expect(cvent).not.toEqual(Cvent.getInstance({} as Window & typeof globalThis))
 
     cvent.destroy()
     const newCvent = Cvent.getInstance()
     expect(cvent).not.toEqual(newCvent)
     expect(newCvent).toEqual(Cvent.getInstance())
-    expect(newCvent).not.toEqual(Cvent.getInstance({} as EventTarget))
+    expect(newCvent).not.toEqual(Cvent.getInstance({} as Window & typeof globalThis))
   })
 
   it('Cvent should on and emit event well', () => {
@@ -217,8 +223,8 @@ describe('Cvent Test', () => {
   })
 
   it('Simulate a lower version browser for IE', () => {
-    const originCustomEvent = globalThis.CustomEvent
-    Object.defineProperty(globalThis, 'CustomEvent', { value: null })
+    const originCustomEvent = ((global || window) as any).CustomEvent
+    Object.defineProperty(global || window, 'CustomEvent', { value: null })
 
     const func1 = jest.fn()
 
@@ -226,12 +232,12 @@ describe('Cvent Test', () => {
     cvent.emit('click1')
     expect(func1).toBeCalledTimes(1)
 
-    Object.defineProperty(globalThis, 'CustomEvent', { value: originCustomEvent })
+    Object.defineProperty(global || window, 'CustomEvent', { value: originCustomEvent })
   })
 
   it('Simulate a non-browser environment', () => {
-    const originAddEventListener = globalThis.addEventListener
-    Object.defineProperty(globalThis, 'addEventListener', { value: null })
+    const originAddEventListener = ((global || window) as any).addEventListener
+    Object.defineProperty(global || window, 'addEventListener', { value: null })
 
     const otherCvent = new Cvent()
     const func1 = jest.fn()
@@ -255,7 +261,7 @@ describe('Cvent Test', () => {
     otherCvent.off('click3')
     otherCvent.emit('click3')
 
-    Object.defineProperty(globalThis, 'CustomEvent', { value: originAddEventListener })
+    Object.defineProperty(global || window, 'CustomEvent', { value: originAddEventListener })
   })
 
   it('Destroy should work well', () => {

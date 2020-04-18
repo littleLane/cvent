@@ -1,3 +1,5 @@
+export type IGlobalType = (Window & typeof globalThis) | NodeJS.Global
+
 export type IFireEvent = (ev: string, payload?: any) => void
 
 export interface IStrategyOptions extends IMemoOption {
