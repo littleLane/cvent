@@ -68,7 +68,8 @@ export default class Cvent {
         if (eventName in this.eventListeners) {
           if (this.eventListeners[eventName].length > Cvent.defaultMaxListeners) {
             console.warn(
-              'By default, each event can register up to 10 listeners for memory leaks, but then you can modify the default limit through setMaxListeners!'
+              'By default, each event can register up to 10 listeners for memory leaks, ' +
+                'but then you can modify the default limit through setMaxListeners!'
             )
           }
 
